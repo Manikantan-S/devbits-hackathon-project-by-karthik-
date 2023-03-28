@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Gold Rate Chart</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+	<h1>Stock Price</h1>
+	<select id="timeRange">
+		<option value="7">Last 7 Days</option>
+		<option value="30">Last 30 Days</option>
+		<option value="180">Last 6 Months</option>
+		<option value="365">Last Year</option>
+	</select>
+	<canvas id="goldRateChart" width="400" height="200"></canvas>
+
+	<div>
+		<h2>Your Stocks</h2>
+		<input type="text" id="stockInput">
+		<button id="addStockButton">Add Stock</button>
+		<ul id="stockList"></ul>
+	</div>
+
+	<script>
+		$(document).ready(function() {
+			var ctx = document.getElementById('goldRateChart').getContext('2d');
+			var chart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: [],
+					datasets: [{
+						label: 'Stock Price',
+						data: [],
+						borderColor: '#FFD700',
+						backgroundColor: 'transparent',
+						fill: false
+					}]
+				},
+				options: {
+					responsive: true,
+					title: {
+						display: true,
+						text: 'Stock Price'
+					},
+					scales: {
+						xAxes: [{
+							type: 'time',
+							time: {
+								unit: 'day',
+								displayFormats: {
+									day: 'MMM D'
+								}
+							}
+						}],
+						yAxes: [{
+							ticks: {
+								beginAtZero: true
+							}
+						}]
+					}
+				}
+			});
+
+			function updateChart(timeRange) {
+				var url = "https://gold-silver-live-prices.p.rapidapi.com/getGoldPriceHistory?place=lucknow&no_of_days=" + timeRange;
+				$.ajax({
+					url: url,
+					method: "GET",
+					headers: {
+						"X-RapidAPI-Key": "5a64acaad4msh8c7b8f74282b272p15ec86jsnad934b1ffaf9",
+						"X-RapidAPI-Host": "gold-silver-live-prices.p.rapidapi.com"
+					}
+				}).done(function(response) {
+					var labels = [];
+					var data = [];
+					for (var i = 0; i < response.prices.length; i++) {
+						labels.push(new Date(response.prices[i].timestamp));
+						data.push(response.prices[i].price);
+					}
+					chart.data.labels = labels;
+					chart.data.datasets[0].data = data;
+					chart.update();
+				});
+			}
+
+			$("#timeRange").on("change", function() {
+				var timeRange = $(this).val();
+				updateChart(timeRange);
+			});
+
+			// initialize the chart with the default time range
+			updateChart(
+
+			// initialize the chart with the default time range
+			updateChart(7));
+		});
+	</script>
+    <P>Stock trading refers to the process of buying and selling shares in publicly traded companies. It is a popular form of investment where investors buy stocks in the hopes that the company will perform well and the stock price will increase, allowing them to sell for a profit. Stock trading can be done through a broker or online trading platform.We at Jethani&Malani believe that stocks are one of the main form investment in today's young generation and are here to help you with it</P>
+    
+</body>
+</html>
